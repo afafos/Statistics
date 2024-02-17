@@ -2,5 +2,5 @@ import charts
 import attributes
 
 N = [10, 50, 1000]
-graphics.print_graphics(N)
-characteristics.print_characteristics(N)
+charts.print_graphics(N)
+attributes.print_characteristics(N)
