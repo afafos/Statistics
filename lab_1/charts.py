@@ -6,38 +6,38 @@ from typing import List
 
 def print_graphics(N: List[int]) -> None:
     # Normal distribution
-    mu_normal = 0.0
-    var_normal = 1.0
+    mu_normal = 0.0 #  среднее значение (математическое ожидание)
+    var_normal = 1.0 # дисперсия (квадрат стандартного отклонения)
     sample_normal = [np.random.normal(mu_normal, var_normal, n) for n in N]
 
     # Cauchy distribution
-    mu_cauchy = 0.0
-    var_cauchy = 1.0
+    mu_cauchy = 0.0 # параметр сдвига распределения
+    var_cauchy = 1.0 # параметр масштаба
     sample_cauchy = [mu_cauchy + var_cauchy * np.random.standard_cauchy(n) for n in N]
 
     # Student's distribution
-    t_student = 3.0
+    t_student = 3.0  # число степеней свободы
     sample_student = [np.random.standard_t(t_student, n) for n in N]
 
     # Poisson distribution
-    mu_poisson = 10.0
+    mu_poisson = 10.0  # среднее число событий за единицу времени или пространства (дисперсия)
     sample_poisson = [np.random.poisson(mu_poisson, n) for n in N]
 
     # Uniform distribution
-    a_uniform = -np.sqrt(3)
+    a_uniform = -np.sqrt(3) # интервал [a, b]
     b_uniform = np.sqrt(3)
     sample_uniform = [np.random.uniform(a_uniform, b_uniform, n) for n in N]
 
     samples = [
         sample_normal,
-        [sample_cauchy[i][(np.abs(sample_cauchy[i]) <= 10)] for i in range(len(N))],  # to avoid outliers
-        [sample_student[i][(np.abs(sample_student[i]) <= 10)] for i in range(len(N))],  # to avoid outliers
+        sample_cauchy,
+        sample_student,
         sample_poisson,
         sample_uniform
     ]
 
     # Normal distribution
-    def calc_normal(x: float):
+    def calc_normal(x: float): # вычисляет значение плотности вероятности для нормального распределения
         return (1.0 / (var_normal * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu_normal) ** 2) / (var_normal ** 2))
 
     # Cauchy distribution
@@ -65,7 +65,7 @@ def print_graphics(N: List[int]) -> None:
 
     for j in range(len(samples)):
         plt.figure(figsize=(15, 5))
-        plt.suptitle(f'Cumulative Distribution Function for {names[j]} Distribution')
+        plt.suptitle(f'Cumulative distribution function for {names[j]} distribution')
         for i in range(len(N)):
             plt.subplot(100 + len(N) * 10 + i + 1)
             x_min = min(samples[j][i])
@@ -76,5 +76,9 @@ def print_graphics(N: List[int]) -> None:
             plt.plot(x, y, color='black', linewidth=1)
             plt.title(f'n = {N[i]}')
             plt.xlabel('values')
-            plt.ylabel('Density')
+            plt.ylabel('CDF values')
+            plt.yscale('linear')
+            if N[i] > 500 and names[j] == 'Cauchy':
+                plt.yscale('log')
+                plt.ylabel('log of CDF values')
         plt.show()
